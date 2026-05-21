@@ -1,0 +1,8 @@
+{
+  "name": "backend",
+  "scripts": {
+    "migrate": ".venv\\Scripts\\python.exe manage.py migrate --run-syncdb",
+    "dev": ".venv\\Scripts\\python.exe manage.py runserver",
+    "start": ".venv\\Scripts\\python.exe manage.py migrate --run-syncdb && .venv\\Scripts\\python.exe manage.py runserver"
+  }
+}

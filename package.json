@@ -1,0 +1,16 @@
+{
+  "name": "reactnative_app",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently --raw --names \"mobile,backend\" --prefix-colors \"cyan,green\" \"pnpm --filter learn-react-native start\" \"pnpm --filter backend start\"",
+    "mobile": "pnpm --filter learn-react-native start",
+    "backend": "pnpm --filter backend start"
+  },
+  "devDependencies": {
+    "concurrently": "latest",
+    "eslint": "latest",
+    "prettier": "latest",
+    "turbo": "latest"
+  }
+}
