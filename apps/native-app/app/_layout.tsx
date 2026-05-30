@@ -14,13 +14,23 @@ import { Slot, usePathname } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { Fab, FabIcon } from '@/components/ui/fab';
 import { MoonIcon, SunIcon, SlashIcon } from '@/components/ui/icon';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 export {
-  // Catch any errors thrown by the Layout component.
   ErrorBoundary,
 } from 'expo-router';
 
 SplashScreen.preventAutoHideAsync();
+
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: 2,
+      staleTime: 1000 * 60 * 5,
+    },
+  },
+});
 
 export default function RootLayout() {
   const [loaded, error] = useFonts({
@@ -29,7 +39,6 @@ export default function RootLayout() {
   });
 
   const [styleLoaded, setStyleLoaded] = useState(false);
-  // Expo Router uses Error Boundaries to catch errors in the navigation tree.
   useEffect(() => {
     if (error) throw error;
   }, [error]);
@@ -63,19 +72,21 @@ function RootLayoutNav() {
   };
 
   return (
-    <GluestackUIProvider mode={mode}>
-      <ThemeProvider value={effectiveColorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-        <Slot />
-        {pathname === '/' && (
-          <Fab
-            onPress={handleToggleTheme}
-            className="m-6"
-            size="lg"
-          >
-            <FabIcon as={mode === 'system' ? SlashIcon : (effectiveColorScheme === 'dark' ? MoonIcon : SunIcon)} />
-          </Fab>
-        )}
-      </ThemeProvider>
-    </GluestackUIProvider>
+      <QueryClientProvider client={queryClient}>
+        <GluestackUIProvider mode={mode}>
+          <ThemeProvider value={effectiveColorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+            <Slot />
+            {pathname === '/' && (
+              <Fab
+                onPress={handleToggleTheme}
+                className="m-6"
+                size="lg"
+              >
+                <FabIcon as={mode === 'system' ? SlashIcon : (effectiveColorScheme === 'dark' ? MoonIcon : SunIcon)} />
+              </Fab>
+            )}
+          </ThemeProvider>
+        </GluestackUIProvider>
+      </QueryClientProvider>
   );
 }

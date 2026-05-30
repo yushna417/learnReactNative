@@ -1,101 +1,112 @@
 import React, { useState, useRef, useEffect } from "react";
-import { View, Text, TouchableOpacity, KeyboardAvoidingView, Platform, TextInput, Alert } from "react-native";
+import { View, Text, TouchableOpacity, KeyboardAvoidingView, Platform, TextInput } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useNavigation, useRoute } from "@react-navigation/native";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import { VStack } from "@/components/ui/vstack";
 import { Heading } from "@/components/ui/heading";
 import { Button, ButtonText } from "@/components/ui/button";
-import { HStack } from "@/components/ui/hstack";
-import { useNavigation, useRoute } from "@react-navigation/native";
+import { Alert, AlertIcon, AlertText } from "@/components/ui/alert";
+import { CheckCircleIcon, AlertCircleIcon } from "@/components/ui/icon";
+import { apiClient } from "@/api/client";
 
 export default function OTPVerification() {
     const navigation = useNavigation();
-    // const { email } = route.params.email;
+    const route = useRoute();
+    const email = route.params?.email;
+    const queryClient = useQueryClient();
 
     const [otp, setOtp] = useState(["", "", "", "", "", ""]);
     const [timer, setTimer] = useState(60);
     const [isResendEnabled, setIsResendEnabled] = useState(false);
-    const [isLoading, setIsLoading] = useState(false);
-    const [error, setError] = useState("");
+    const [localError, setLocalError] = useState("");
 
-    const inputRefs = useRef([]);
+    const inputRefs = useRef<TextInput[]>([]);
 
     useEffect(() => {
-        let interval;
-        if (timer > 0 && !isResendEnabled) {
-            interval = setInterval(() => {
-                setTimer((prev) => prev - 1);
-            }, 1000);
-        } else if (timer === 0) {
-            setIsResendEnabled(true);
-        }
-
+        if (timer === 0) { setIsResendEnabled(true); return; }
+        const interval = setInterval(() => setTimer((prev) => prev - 1), 1000);
         return () => clearInterval(interval);
-    }, [timer, isResendEnabled]);
+    }, [timer]);
 
-    const handleOtpChange = (text, index) => {
+    const { mutate: verifyOtp, isPending: isVerifying, isSuccess, error: verifyError } = useMutation({
+        mutationFn: async (otpCode: string) => {
+            const sessionToken = await AsyncStorage.getItem("session_token");
+            if (!sessionToken) throw new Error("Session expired. Please log in again. kk");
+
+            const response = await apiClient.post("/auth/verify-otp/", {
+                otp: otpCode,
+                session_token: sessionToken,
+            });
+            return response.data;
+        },
+        onSuccess: () => {
+            AsyncStorage.removeItem("session_token");
+            queryClient.invalidateQueries({ queryKey: ['auth', 'me'] });
+
+            navigation.navigate("login");
+        },
+        onError: (error: any) => {
+            const msg =
+                error?.response?.data?.error ||
+                error?.response?.data?.otp?.[0] ||
+                error?.message ||
+                "Invalid OTP. Please try again.";
+            setLocalError(msg);
+        },
+    });
+
+    const { mutate: resendOtp, isPending: isResending } = useMutation({
+        mutationFn: async () => {
+            const response = await apiClient.post("/auth/register/", { email });
+            return response.data;
+        },
+        onSuccess: async (data) => {
+            await AsyncStorage.setItem("session_token", data.session_token);
+            setOtp(["", "", "", "", "", ""]);
+            setTimer(60);
+            setIsResendEnabled(false);
+            setLocalError("");
+            inputRefs.current[0]?.focus();
+        },
+        onError: (error: any) => {
+            const msg =
+                error?.response?.data?.error ||
+                "Failed to resend OTP. Please try again.";
+            setLocalError(msg);
+        },
+    });
+
+    const handleOtpChange = (text: string, index: number) => {
         if (text.length > 1) return;
-
         const newOtp = [...otp];
         newOtp[index] = text;
         setOtp(newOtp);
-        setError("");
-
-        // Auto-focus next input
-        if (text && index < 5) {
-            inputRefs.current[index + 1].focus();
-        }
+        setLocalError("");
+        if (text && index < 5) inputRefs.current[index + 1]?.focus();
     };
 
-    const handleKeyPress = (e, index) => {
+    const handleKeyPress = (e: any, index: number) => {
         if (e.nativeEvent.key === "Backspace" && !otp[index] && index > 0) {
-            inputRefs.current[index - 1].focus();
+            inputRefs.current[index - 1]?.focus();
         }
     };
 
-    const handleVerifyOTP = async () => {
+    const handleVerify = () => {
         const otpValue = otp.join("");
-
         if (otpValue.length !== 6) {
-            setError("Please enter the complete 6-digit code");
+            setLocalError("Please enter the complete 6-digit code");
             return;
         }
-
-        setError("");
-        setIsLoading(true);
-
-        // Simulate API call
-        setTimeout(() => {
-            setIsLoading(false);
-            // For demo, accept any 6-digit code
-            if (otpValue.length === 6) {
-                console.log("OTP Verified successfully");
-                Alert.alert(
-                    "Success",
-                    "OTP verified successfully!",
-                    [
-                        {
-                            text: "Continue",
-                            onPress: () => navigation.navigate("tabs") // Navigate to your main app
-                        }
-                    ]
-                );
-            } else {
-                setError("Invalid OTP. Please try again.");
-            }
-        }, 1500);
+        setLocalError("");
+        verifyOtp(otpValue);
     };
 
-    const handleResendOTP = () => {
-        setIsResendEnabled(false);
-        setTimer(60);
-        setOtp(["", "", "", "", "", ""]);
-        inputRefs.current[0].focus();
-
-        // Simulate resending OTP
-        // console.log("Resending OTP to:", email);
-        // Alert.alert("OTP Sent", `A new verification code has been sent to ${email}`);
-    };
+    const errorMessage = localError ||
+        (verifyError as any)?.response?.data?.error ||
+        (verifyError as any)?.message;
 
     return (
         <SafeAreaView className="flex-1 bg-white">
@@ -104,6 +115,7 @@ export default function OTPVerification() {
                 className="flex-1"
             >
                 <View className="flex-1 justify-center px-6">
+                    {/* Header */}
                     <View className="items-center mb-8">
                         <View className="w-20 h-20 bg-yellow-100 rounded-2xl items-center justify-center mb-4 shadow-sm">
                             <View className="w-12 h-12 rounded-full bg-yellow-500 items-center justify-center">
@@ -117,25 +129,42 @@ export default function OTPVerification() {
                             Enter the 6-digit verification code sent to
                         </Text>
                         <Text className="text-yellow-600 font-semibold text-base mt-1">
-                            {/* {email} */}
+                            {email}
                         </Text>
                     </View>
 
-                    {/* OTP Input Fields */}
+                    {isSuccess && (
+                        <Alert action="success" variant="solid" className="mb-4 rounded-xl">
+                            <AlertIcon as={CheckCircleIcon} className="text-white mr-2" />
+                            <AlertText className="text-white text-sm font-medium">
+                                OTP verified successfully!
+                            </AlertText>
+                        </Alert>
+                    )}
+
+                    {errorMessage ? (
+                        <Alert action="error" variant="solid" className="mb-4 rounded-xl">
+                            <AlertIcon as={AlertCircleIcon} className="text-white mr-2" />
+                            <AlertText className="text-white text-sm font-medium">
+                                {errorMessage}
+                            </AlertText>
+                        </Alert>
+                    ) : null}
+
                     <VStack space="xl" className="mb-8">
                         <View className="flex-row justify-between gap-2">
                             {otp.map((digit, index) => (
                                 <View
                                     key={index}
-                                    className={`flex-1 h-14 rounded-xl border ${error
-                                        ? "border-red-300 bg-red-50"
-                                        : digit
-                                            ? "border-yellow-400 bg-yellow-50"
-                                            : "border-gray-200 bg-gray-50"
+                                    className={`flex-1 h-14 rounded-xl border ${errorMessage
+                                            ? "border-red-300 bg-red-50"
+                                            : digit
+                                                ? "border-yellow-400 bg-yellow-50"
+                                                : "border-gray-200 bg-gray-50"
                                         } items-center justify-center`}
                                 >
                                     <TextInput
-                                        ref={(ref) => (inputRefs.current[index] = ref)}
+                                        ref={(ref) => (inputRefs.current[index] = ref!)}
                                         className="text-2xl font-bold text-gray-900 text-center"
                                         keyboardType="number-pad"
                                         maxLength={1}
@@ -149,47 +178,41 @@ export default function OTPVerification() {
                                 </View>
                             ))}
                         </View>
-
-                        {error ? (
-                            <View className="bg-red-50 rounded-xl p-3">
-                                <Text className="text-red-500 text-xs text-center">
-                                    {error}
-                                </Text>
-                            </View>
-                        ) : null}
                     </VStack>
 
+                    {/* Timer / Resend */}
                     <View className="flex-row justify-center items-center mb-8">
                         {!isResendEnabled ? (
                             <Text className="text-gray-500 text-sm">
-                                Resend code in
+                                Resend code in{" "}
                                 <Text className="text-yellow-600 font-semibold">
                                     00:{timer < 10 ? `0${timer}` : timer}
                                 </Text>
                             </Text>
                         ) : (
-                            <TouchableOpacity onPress={handleResendOTP}>
+                            <TouchableOpacity
+                                onPress={() => resendOtp()}
+                                disabled={isResending}
+                            >
                                 <Text className="text-yellow-600 font-semibold text-sm">
-                                    Resend Verification Code
+                                    {isResending ? "Sending..." : "Resend Verification Code"}
                                 </Text>
                             </TouchableOpacity>
                         )}
                     </View>
 
-                    {/* Verify Button */}
                     <Button
                         size="lg"
                         variant="solid"
-                        onPress={handleVerifyOTP}
-                        disabled={isLoading}
+                        onPress={handleVerify}
+                        disabled={isVerifying}
                         className="h-14 bg-yellow-500 active:bg-yellow-600 rounded-xl shadow-sm"
                     >
                         <ButtonText className="text-white font-semibold text-base">
-                            {isLoading ? "Verifying..." : "Verify & Continue"}
+                            {isVerifying ? "Verifying..." : "Verify & Continue"}
                         </ButtonText>
                     </Button>
 
-                    {/* Back to Login */}
                     <TouchableOpacity
                         onPress={() => navigation.navigate("login")}
                         className="mt-6"

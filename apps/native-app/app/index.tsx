@@ -1,8 +1,6 @@
 import React, { useEffect } from "react";
 import { View, Text, StyleSheet, Image } from "react-native";
 import { useRouter } from "expo-router";
-import { Box } from "@/components/ui/box";
-import { useTheme } from "@react-navigation/native";
 import { useColorScheme } from "@/components/useColorScheme.web";
 
 export default function HomeScreen() {
@@ -11,7 +9,7 @@ export default function HomeScreen() {
 
   useEffect(() => {
       const timer = setTimeout(() => {
-          router.replace("/(auth)/login");
+          router.replace("/(public)/home");
       }, 5000); // 2.5 seconds
 
       return () => clearTimeout(timer);

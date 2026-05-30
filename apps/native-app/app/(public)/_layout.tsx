@@ -1,13 +1,13 @@
 import React from 'react';
-import FontAwesome from '@expo/vector-icons/FontAwesome';
+import AntDesign from '@expo/vector-icons/AntDesign';
 import { Tabs } from 'expo-router';
 import { useClientOnlyValue } from '@/components/useClientOnlyValue';
 
 function TabBarIcon(props: {
-  name: React.ComponentProps<typeof FontAwesome>['name'];
+  name: React.ComponentProps<typeof AntDesign>['name'];
   color: string;
 }) {
-  return <FontAwesome size={18} style={{ marginBottom: -3 }} {...props} />;
+  return <AntDesign size={18} style={{ marginBottom: -3 }} {...props} />;
 }
 
 export default function TabLayout() {
@@ -20,17 +20,19 @@ export default function TabLayout() {
       }}
     >
       <Tabs.Screen
-        name="tab1"
+        name="home"
         options={{
-          title: 'Tab 1',
-          tabBarIcon: ({ color }) => <TabBarIcon name="star-o" color={color} />,
+          title: 'Home',
+          tabBarIcon: ({ color }) => <TabBarIcon name="home" color={color} />,
+          headerShown:false
         }}
       />
       <Tabs.Screen
-        name="tab2"
+        name="account"
         options={{
-          title: 'Tab 2',
-          tabBarIcon: ({ color }) => <TabBarIcon name="star-o" color={color} />,
+          title: 'Account',
+          tabBarIcon: ({ color }) => <TabBarIcon name="user" color={color} />,
+          headerShown:false
         }}
       />
     </Tabs>

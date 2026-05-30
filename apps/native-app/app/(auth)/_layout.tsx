@@ -1,11 +1,13 @@
 export {
-  // Catch any errors thrown by the Layout component.
   ErrorBoundary,
 } from 'expo-router';
-
-
-
 import { Stack } from 'expo-router';
+
+export type RootStackParamList = {
+  login: undefined;
+  otp: { email: string };
+  tabs: undefined;
+};
 
 export default function AppLayout() {
   return (
