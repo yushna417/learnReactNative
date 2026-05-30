@@ -14,9 +14,44 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+
 from django.contrib import admin
 from django.urls import path
+from api.auth.views import RegisterUserView, LoginView, VerifyOTPView, LogoutView, GetCurrentUserView
+from api.business.views import (
+    CreateBusinessListingView,
+    GetBusinessListingDetailView,
+    GetAllListingsView,
+    UpdateBusinessListingView,
+    DeleteBusinessListingView,
+)
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path("admin/", admin.site.urls),
+    path("auth/register/", RegisterUserView.as_view(), name="register"),
+    path("auth/verify-otp/", VerifyOTPView.as_view(), name="verify-otp"),
+    path("auth/login/", LoginView.as_view(), name="login"),
+    path("auth/logout/", LogoutView.as_view(), name="logout"),
+    path("auth/me/", GetCurrentUserView.as_view(), name="own-details"),
+    path(
+        "business/create/", CreateBusinessListingView.as_view(), name="create-listing"
+    ),
+    path(
+        "business/listings/", GetAllListingsView.as_view(), name="get-listing"
+    ),
+    path(
+        "business/<int:id>/",
+        GetBusinessListingDetailView.as_view(),
+        name="listing-detail",
+    ),
+    path(
+        "business/<int:id>/update/",
+        UpdateBusinessListingView.as_view(),
+        name="update-listing",
+    ),
+    path(
+        "business/<int:id>/delete/",
+        DeleteBusinessListingView.as_view(),
+        name="delete-listing",
+    ),
 ]

@@ -14,7 +14,3 @@ def validate_e164_phone(value):
         )
 
 
-def validate_otp_code(value):
-    """Validate OTP code format"""
-    if not re.match(r"^\d{6}$", value):
-        raise ValidationError("OTP code must be exactly 6 digits")

@@ -5,7 +5,9 @@
   "scripts": {
     "dev": "concurrently --raw --names \"mobile,backend\" --prefix-colors \"cyan,green\" \"pnpm --filter learn-react-native start\" \"pnpm --filter backend start\"",
     "mobile": "pnpm --filter learn-react-native start",
-    "backend": "pnpm --filter backend start"
+    "backend": "pnpm --filter backend start",
+    "tunnel": "ngrok http 8000",
+    "dev:all": "concurrently --raw --names \"mobile,backend,tunnel\" --prefix-colors \"cyan,green,yellow\" \"pnpm --filter learn-react-native start\" \"pnpm --filter backend start\" \"ngrok http 8000\""
   },
   "devDependencies": {
     "concurrently": "latest",

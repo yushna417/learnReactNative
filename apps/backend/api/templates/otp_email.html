@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OTP Verification | Digital Yellow Paper</title>
+    <style>
+        /* Modern CSS reset & base styles for better rendering in email clients */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Email-safe fallbacks */
+        body {
+            margin: 0;
+            padding: 0;
+            
+            /* soft yellow background outer */
+            font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Helvetica, Arial, sans-serif;
+        }
+
+        /* Make images responsive and consistent */
+        img {
+            border: 0;
+            height: auto;
+            line-height: 100%;
+            outline: none;
+            text-decoration: none;
+            display: block;
+        }
+
+        /* Table alignment for email clients */
+        .yshortcuts a {
+            border-bottom: none !important;
+        }
+
+        @media only screen and (max-width: 550px) {
+            .responsive-table {
+                width: 100% !important;
+            }
+
+            .inner-padding {
+                padding-left: 20px !important;
+                padding-right: 20px !important;
+            }
+
+            .otp-box {
+                font-size: 32px !important;
+                letter-spacing: 6px !important;
+                padding: 14px 24px !important;
+            }
+
+            .main-title {
+                font-size: 24px !important;
+            }
+        }
+    </style>
+</head>
+
+<body style="margin:0;padding:0;font-family:'Segoe UI', Roboto, 'Helvetica Neue', Arial,sans-serif;">
+
+    <!-- Outer email wrapper with warm yellow background -->
+    <table width="100%" cellpadding="0" cellspacing="0" border="0" align="center"
+        style="padding:15px 0;">
+        <tr>
+            <td align="center" style="padding:0 6px;">
+
+                <!-- Main Card Container : white card with elevated shadow & gentle yellow accents -->
+                <table width="540" cellpadding="0" cellspacing="0" border="0" align="center"
+                    style="max-width:640px;width:100%;background:#ffffff;border-radius:28px;overflow:hidden;box-shadow:0 25px 45px -12px rgba(0,0,0,0.12);border:1px solid #ffecb3;"
+                    class="responsive-table">
+
+                    <!-- Header: yellow brand bar + logo and company name -->
+                    <tr>
+                        <td
+                            style="background:#FFD400;padding-top:10px;text-align:center;display:flex;padding:15px 25px; gap:18px">
+
+                            <h1
+                                style="font-size:28px;font-weight:700;color:#1e1a0c;margin:10px 0 0 0;letter-spacing:-0.3px;font-family:'Segoe UI',Roboto,sans-serif;">
+                                Digital Yellow Paper</h1>
+
+                        </td>
+                    </tr>
+
+                    <!-- Main content area: OTP message & code exactly as requested -->
+                    <tr>
+                        <td style="padding:38px 32px 42px 32px;background:#ffffff;" class="inner-padding">
+
+                            <!-- Greeting -->
+                            <p style="font-size:14px;color:#6c757d;font-weight:500;margin:0 0 8px 0;">Hello,</p>
+
+                            <!-- OTP instruction line -->
+                            <p style="font-size:14px;color:#6c757d;line-height:1.5;margin:0 0 28px 0;">
+                                Your One-Time Password (OTP) for account verification is:
+                            </p>
+
+                            <!-- OTP CODE BOX - Yellow outlined / subtle yellow background (brand theme) -->
+                            <div style="text-align:center;margin-bottom:28px;">
+                                <div
+                                    style="display:inline-block;background:#FFFCE8;border-radius:14px;width:100%; padding-block:9px;box-shadow:0 6px 12px -6px rgba(0,0,0,0.05);">
+                                    <span
+                                        style="font-size:42px;font-weight:800;letter-spacing:8px;font-family:'Courier New','SF Mono',monospace;color:#B45309;background:transparent;">
+                                        {{otp}}</span>
+                                </div>
+                            </div>
+
+                            <!-- Validity notice: 2 minutes and warning (yellow alert style) -->
+                            <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:4px;">
+                                <tr>
+                                    <td>
+
+                                        <p style="margin:0;font-size:14px;color:#6c757d;line-height:1.4;"> This OTP is
+                                            valid for <span style="font-size:15px;font-weight:700;color:#7A4B0C;"> 2
+                                                minutes.</span> Please do not share this code with anyone.</p>
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <!-- Footer note: if not requested -->
+                            <p style="font-size:13.5px;color:#6c757d;line-height:1.45">
+                                If you didn't request this code, please ignore this email.
+                                Thank you for using our service!
+                            </p>
+
+                        </td>
+                    </tr>
+
+                    <!-- Divider line subtle -->
+                    <tr>
+                        <td style="padding:0 8px;">
+                            <div style="height:1px;background:#f0ead8;"></div>
+                        </td>
+                    </tr>
+
+                    <!-- Footer: copyright with yellow touch & company name -->
+                    <tr>
+                        <td style="padding:10px;background:#ffffff;text-align:center;">
+                            <p style="margin:0;font-size:12px;color:#a08e6f;letter-spacing:0.2px;">© {{year}} Digital
+                                Yellow Paper. All rights reserved.</p>
+                            <p style="margin:8px 0 0 0;font-size:11px;color:#cbbd9b;">This is an automated transactional
+                                email.</p>
+                            <!-- subtle yellow accent (brand) -->
+                            <div
+                                style="width:40px;height:3px;background:#FFD400;margin:14px auto 0 auto;border-radius:4px;">
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+
+                <!-- Small spacer note for clients -->
+                <div style="height:8px;"></div>
+
+            </td>
+        </tr>
+    </table>
+
+</body>
+
+</html>

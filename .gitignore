@@ -43,3 +43,13 @@ app-example
 /android
 
 .venv/
+# Python cache files
+__pycache__/
+*.pyc
+
+expo-env.d.ts
+# @end expo-cli
+
+# all env files anywhere
+**/.env
+**/.env.*

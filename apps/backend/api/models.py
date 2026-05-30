@@ -2,20 +2,60 @@
 from django.db import models
 from django.utils import timezone
 from datetime import timedelta
-from validators import validate_e164_phone
+from .validators import validate_e164_phone
+from django.contrib.auth.models import (
+    AbstractBaseUser,
+    PermissionsMixin,
+    BaseUserManager,
+)
 
 
-class User(models.Model):
+class UserManager(BaseUserManager):
+    def create_user(self, email, password=None, **extra_fields):
+        if not email:
+            raise ValueError("Email is required")
+
+        email = self.normalize_email(email)
+        user = self.model(email=email, **extra_fields)
+
+        if password:
+            user.set_password(password)
+        else:
+            user.set_unusable_password()
+
+        user.save(using=self._db)
+        return user
+
+    def create_superuser(self, email, password=None, **extra_fields):
+        extra_fields.setdefault("is_staff", True)
+        extra_fields.setdefault("is_superuser", True)
+        extra_fields.setdefault("is_active", True)
+
+        if extra_fields.get("is_staff") is not True:
+            raise ValueError("Superuser must have is_staff=True")
+        if extra_fields.get("is_superuser") is not True:
+            raise ValueError("Superuser must have is_superuser=True")
+
+        return self.create_user(email, password, **extra_fields)
+
+
+class User(AbstractBaseUser, PermissionsMixin):
     """
     Custom User model for email-based authentication with OTP
     """
 
-
     email = models.EmailField(unique=True, db_index=True)
-    is_active = models.BooleanField(default=True)
+
+    is_active = models.BooleanField(default=False)
+    is_staff = models.BooleanField(default=False)
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    last_login = models.DateTimeField(null=True, blank=True)
+
+    objects = UserManager()
+
+    USERNAME_FIELD = "email"
+    REQUIRED_FIELDS = []
 
     class Meta:
         db_table = "users"
@@ -101,144 +141,77 @@ class OTPAttemptLog(models.Model):
 class BusinessListing(models.Model):
     """
     Business listing model for service providers
+    Based on SRS Feature 2 requirements
     """
 
-    STATUS_CHOICES = [
-        ("pending", "Pending Review"),
-        ("approved", "Approved"),
-        ("rejected", "Rejected"),
-        ("suspended", "Suspended"),
-    ]
-
-    # Owner Information
-    owner = models.ForeignKey(
-        User,
-        on_delete=models.CASCADE,
-        related_name="business_listings",
-        limit_choices_to={"user_type__in": ["business_owner", "both"]},
-    )
-
-    # Business Information
     title = models.CharField(
-        max_length=100, db_index=True, help_text="Official trading name of the business"
+        max_length=100,
+        db_index=True,
+        help_text="Official trading name of the business (max 100 characters)",
     )
 
     service_detail = models.TextField(
         max_length=2000,
-        help_text="Comprehensive description of services, operational specialties, and offerings",
+        help_text="Comprehensive description of services, operational specialties, and offerings (max 2000 characters)",
     )
 
+    business_category = models.CharField(
+        max_length=50,
+        db_index=True,
+        blank=True,
+        help_text="Category of the business (e.g., Restaurant, Plumbing, Cleaning)",
+    )
     phone_no = models.CharField(
         max_length=20,
         validators=[validate_e164_phone],
-        help_text="Primary contact number (E.164 format)",
+        help_text="Primary contact number for customer inquiries (E.164 format, e.g., +1234567890)",
     )
 
     email = models.EmailField(
         help_text="Public contact email address for business correspondence"
     )
 
-    address = models.TextField(blank=True, help_text="Structured address (geocoded)")
-
-    status = models.CharField(
-        max_length=20, choices=STATUS_CHOICES, default="pending", db_index=True
+    latitude = models.DecimalField(
+        max_digits=10, 
+        decimal_places=7, 
+        null=True, 
+        blank=True,
+        db_index=True
     )
-    is_public = models.BooleanField(default=False, db_index=True)
-    view_count = models.PositiveIntegerField(default=0)
+
+    longitude = models.DecimalField(
+        max_digits=10, 
+        decimal_places=7, 
+        null=True, 
+        blank=True,
+        db_index=True
+    )
+
+    address = models.TextField(blank=True, help_text="Structured address (geocoded)")
 
     created_at = models.DateTimeField(auto_now_add=True, db_index=True)
     updated_at = models.DateTimeField(auto_now=True)
-    approved_at = models.DateTimeField(null=True, blank=True)
 
     class Meta:
         db_table = "business_listings"
         ordering = ["-created_at"]
         indexes = [
             models.Index(fields=["title"]),
-            models.Index(fields=["status", "is_public"]),
+            models.Index(fields=["business_category"]),
+            models.Index(fields=["created_at"]),
             models.Index(fields=["latitude", "longitude"]),
         ]
-
-    def __str__(self):
-        return f"{self.title} - {self.owner.email}"
+        verbose_name = "Business Listing"
+        verbose_name_plural = "Business Listings"
 
     def save(self, *args, **kwargs):
+        """Sanitize inputs before saving"""
         self.title = self.title.strip()
+        self.business_category = self.business_category.strip()
         self.service_detail = self.service_detail.strip()
-
-        if self.status == "approved" and not self.approved_at:
-            self.approved_at = timezone.now()
-
-        self.is_public = self.status == "approved"
-
+        self.email = self.email.lower().strip()
         super().save(*args, **kwargs)
 
 
-class BusinessImage(models.Model):
-    """
-    Optional: Images for business listings (future enhancement)
-    """
+    
 
-    business = models.ForeignKey(
-        BusinessListing, on_delete=models.CASCADE, related_name="images"
-    )
-    image = models.ImageField(upload_to="business_images/%Y/%m/")
-    is_primary = models.BooleanField(default=False)
-    uploaded_at = models.DateTimeField(auto_now_add=True)
-
-    class Meta:
-        db_table = "business_images"
-        ordering = ["-is_primary", "uploaded_at"]
-
-
-class SearchHistory(models.Model):
-    """
-    Track user search queries for analytics and personalization
-    """
-
-    user = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name="searches", null=True, blank=True
-    )
-    session_id = models.CharField(max_length=100, db_index=True)
-    search_query = models.CharField(max_length=200)
-    radius_km = models.PositiveIntegerField(default=10)
-    results_count = models.PositiveIntegerField(default=0)
-    searched_at = models.DateTimeField(auto_now_add=True, db_index=True)
-    ip_address = models.GenericIPAddressField(null=True, blank=True)
-
-    class Meta:
-        db_table = "search_history"
-        ordering = ["-searched_at"]
-        indexes = [
-            models.Index(fields=["session_id", "searched_at"]),
-            models.Index(fields=["search_query"]),
-        ]
-
-    def __str__(self):
-        return f"Search: '{self.search_query}' at {self.searched_at}"
-
-
-class BusinessAnalytics(models.Model):
-    """
-    Track business listing performance metrics
-    """
-
-    business = models.ForeignKey(
-        BusinessListing, on_delete=models.CASCADE, related_name="analytics"
-    )
-    date = models.DateField(db_index=True)
-    profile_views = models.PositiveIntegerField(default=0)
-    phone_click_count = models.PositiveIntegerField(default=0)
-    location_click_count = models.PositiveIntegerField(default=0)
-    search_impressions = models.PositiveIntegerField(default=0)
-
-    class Meta:
-        db_table = "business_analytics"
-        unique_together = ["business", "date"]
-        ordering = ["-date"]
-        indexes = [
-            models.Index(fields=["business", "date"]),
-        ]
-
-    def __str__(self):
-        return f"Analytics for {self.business.title} - {self.date}"
