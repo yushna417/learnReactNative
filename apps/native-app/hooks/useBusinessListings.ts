@@ -20,7 +20,6 @@ export const useCreateListing = () => {
 };
 // adjust to your actual path
 
-// ─── Types ────────────────────────────────────────────────────────────────────
 
 export type ListingParams = {
 	search?: string;

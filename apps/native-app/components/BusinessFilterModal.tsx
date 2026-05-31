@@ -67,7 +67,6 @@ export function BusinessFilterModal({
 }: BusinessFilterModalProps) {
 	const close = () => dispatch({ type: "TOGGLE_FILTERS", value: false });
 
-	// Tapping a radius chip when no location is set → open GPS automatically
 	const handleRadiusPress = async (value: number) => {
 		const next = state.radiusKm === value ? null : value;
 		if (next === null) {
@@ -90,7 +89,6 @@ export function BusinessFilterModal({
 			onRequestClose={close}
 		>
 			<View className="flex-1 bg-black/50">
-				{/* Tap backdrop to dismiss */}
 				<TouchableOpacity
 					className="flex-1"
 					activeOpacity={1}
@@ -99,7 +97,6 @@ export function BusinessFilterModal({
 
 				<View className="bg-white rounded-t-3xl">
 					<View className="p-6">
-						{/* ── Header ──────────────────────────────────────── */}
 						<View className="flex-row justify-between items-center mb-6">
 							<Heading size="xl" className="text-gray-900">
 								Filters
@@ -114,7 +111,6 @@ export function BusinessFilterModal({
 							keyboardShouldPersistTaps="handled"
 							className="max-h-[480px]"
 						>
-							{/* ── Category ────────────────────────────────── */}
 							<View className="mb-6">
 								<SectionLabel>Category</SectionLabel>
 								<View className="flex-row flex-wrap">
