@@ -10,6 +10,7 @@
     "dev:all": "concurrently --raw --names \"mobile,backend,tunnel\" --prefix-colors \"cyan,green,yellow\" \"pnpm --filter learn-react-native start\" \"pnpm --filter backend start\" \"ngrok http 8000\""
   },
   "devDependencies": {
+    "@babel/plugin-transform-react-jsx": "^7.29.7",
     "concurrently": "latest",
     "eslint": "latest",
     "prettier": "latest",
