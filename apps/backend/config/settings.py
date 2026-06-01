@@ -21,13 +21,13 @@ from cryptography.fernet import Fernet
 BASE_DIR = Path(__file__).resolve().parent.parent
 env = environ.Env()
 
-environ.Env.read_env(BASE_DIR / ".env")
+environ.Env.read_env(BASE_DIR / ".env.dev")
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-=9_a^o5@7ajqxu5)zzd#nf8ai$6we0(_h^z_mc1o7mi5i8^eu0"
+SECRET_KEY = env("DJANGO_SECRET_KEY")
 FERNET_KEY = Fernet.generate_key()
 
 # SECURITY WARNING: don't run with debug turned on in production!
@@ -86,8 +86,12 @@ AUTH_USER_MODEL = "api.User"
 
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": env('POSTGRES_DB'),
+        "USER": env('POSTGRES_USER'),
+        "PASSWORD": env('POSTGRES_PASSWORD'),
+        "HOST": env('DB_HOST'),
+        "PORT": env('DB_PORT'),
     }
 }
 
@@ -128,6 +132,10 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
 STATIC_URL = "static/"
+STATIC_ROOT = BASE_DIR / "staticfiles"
+
+MEDIA_URL = "/media/"
+MEDIA_ROOT = BASE_DIR / "media"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field

@@ -30,7 +30,7 @@ export const useLogout = () => {
 		mutationFn: async () => {
 			const response = await apiClient.post("/auth/logout/");
 			await AsyncStorage.multiRemove(["access_token", "refresh_token"]);
-			await queryClient.invalidateQueries({ queryKey: ["auth", "me"] });
+			await queryClient.setQueryData(["auth", "me"], null);
 
 			return response.data;
 		},
