@@ -14,7 +14,7 @@ export const useCreateListing = () => {
 			return response.data;
 		},
 		onSuccess: () => {
-			queryClient.invalidateQueries({ queryKey: ["user-listings"] });
+			queryClient.invalidateQueries({ queryKey: ["listings"] });
 		},
 	});
 };
@@ -105,7 +105,7 @@ export const useUpdateListing = (id: number) => {
 		},
 		onSuccess: () => {
 			queryClient.invalidateQueries({ queryKey: ["listing", id] });
-			queryClient.invalidateQueries({ queryKey: ["user-listings"] });
+			queryClient.invalidateQueries({ queryKey: ["listings"] });
 		},
 	});
 };
@@ -119,7 +119,7 @@ export const useDeleteListing = () => {
 			return response.data;
 		},
 		onSuccess: () => {
-			queryClient.invalidateQueries({ queryKey: ["user-listings"] });
+			queryClient.invalidateQueries({ queryKey: ["listings"] });
 		},
 	});
 };

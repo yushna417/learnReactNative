@@ -60,13 +60,11 @@ export default function BusinessSearch() {
 				behavior={Platform.OS === "ios" ? "padding" : "height"}
 				className="flex-1"
 			>
-				{/* ── Header ──────────────────────────────────────────────── */}
 				<View className="px-6 pb-1">
 					<Heading size="2xl" className="text-gray-900 mb-4">
 						Local Businesses
 					</Heading>
 
-					{/* Search bar row */}
 					<View className="flex-row gap-2 mb-3">
 						<View className="flex-1 bg-gray-100 rounded-xl">
 							<Input className="border-0 h-12">
@@ -146,7 +144,6 @@ export default function BusinessSearch() {
 							</TouchableOpacity>
 						)}
 
-						{/* Clear all */}
 						{activeFilterCount > 0 && (
 							<TouchableOpacity
 								onPress={clearAll}

@@ -82,7 +82,6 @@ export function LocationPickerSection({
 								{state.userLat!.toFixed(5)}, {state.userLon!.toFixed(5)}
 							</Text>
 						</View>
-						{/* Allow changing location */}
 						<TouchableOpacity
 							onPress={() => setShowAddressInput(true)}
 							className="bg-green-100 px-3 py-1 rounded-full"
