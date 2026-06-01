@@ -96,7 +96,7 @@ export default function Login() {
 							Welcome Back
 						</Heading>
 						<Text className="text-gray-500 text-base text-center">
-							Enter your email to receive a one-time password
+							Enter your email to sign in to your account
 						</Text>
 					</View>
 
@@ -167,7 +167,12 @@ export default function Login() {
 						</ButtonText>
 					</Button>
 
-					{/* Sign Up Link */}
+					<View className="flex-row items-center mt-8">
+						<View className="flex-1 h-px bg-gray-200" />
+						<Text className="mx-4 text-gray-400 text-xs">OR</Text>
+						<View className="flex-1 h-px bg-gray-200" />
+					</View>
+
 					<View className="mt-6 flex-row justify-center">
 						<Text className="text-gray-600 text-sm">
 							Don't have an account?{" "}
@@ -179,18 +184,9 @@ export default function Login() {
 						</TouchableOpacity>
 					</View>
 
-					{/* Divider */}
-					<View className="flex-row items-center mt-8">
-						<View className="flex-1 h-px bg-gray-200" />
-						<Text className="mx-4 text-gray-400 text-xs">OR</Text>
-						<View className="flex-1 h-px bg-gray-200" />
-					</View>
 
-					<View className="mt-6 bg-gray-50 rounded-xl p-4">
-						<Text className="text-gray-500 text-xs text-center">
-							Demo: any valid email works
-						</Text>
-					</View>
+
+
 				</View>
 			</KeyboardAvoidingView>
 		</SafeAreaView>

@@ -88,7 +88,7 @@ export function BusinessFilterModal({
 			visible={state.showFilters}
 			onRequestClose={close}
 		>
-			<View className="flex-1 bg-black/50">
+			<View className="flex-1 bg-black/50 py-1">
 				<TouchableOpacity
 					className="flex-1"
 					activeOpacity={1}
