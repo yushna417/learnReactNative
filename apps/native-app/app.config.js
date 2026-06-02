@@ -5,7 +5,7 @@ export default {
 		slug: "learn-react-native",
 		version: "1.0.0",
 		orientation: "portrait",
-		icon: "./assets/images/icon.jpeg",
+		icon: "./assets/images/icon.png",
 		scheme: "starterkitexpo",
 		userInterfaceStyle: "automatic",
 
@@ -18,7 +18,7 @@ export default {
 
 		android: {
 			adaptiveIcon: {
-				foregroundImage: "./assets/images/icon.jpeg",
+				foregroundImage: "./assets/images/adaptive-icon.png",
 				backgroundColor: "#ffffff",
 			},
 			package: "com.yushna417sorganization.learnreactnative",
@@ -36,7 +36,7 @@ export default {
 		web: {
 			bundler: "metro",
 			output: "static",
-			favicon: "./assets/images/icon.jpeg",
+			favicon: "./assets/images/icon.png",
 		},
 
 		plugins: [
