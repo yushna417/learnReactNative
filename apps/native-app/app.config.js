@@ -2,7 +2,7 @@
 export default {
 	expo: {
 		name: "Digital Yellow Paper",
-		slug: "learn-react-native",
+		slug: "digital-yellow-paper",
 		version: "1.0.1",
 		orientation: "portrait",
 		icon: "./assets/images/icon.png",
@@ -57,7 +57,7 @@ export default {
 		"extra": {
 			"router": {},
 			"eas": {
-				"projectId": "9766bf12-7e0a-4d50-8c03-e7be8d388dd5",
+				"projectId": "c4ba2b6c-7ff4-44cc-8ec2-7db713697fdd",
 				"projectRoot": "apps/native-app"
 			}
 		},
@@ -66,7 +66,7 @@ export default {
 			"policy": "appVersion"
 		},
 		"updates": {
-			"url": "https://u.expo.dev/9766bf12-7e0a-4d50-8c03-e7be8d388dd5"
+			"url": "https://u.expo.dev/c4ba2b6c-7ff4-44cc-8ec2-7db713697fdd"
 		}
 	}
 }
