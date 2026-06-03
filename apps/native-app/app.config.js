@@ -57,16 +57,16 @@ export default {
 		"extra": {
 			"router": {},
 			"eas": {
-				"projectId": "c4ba2b6c-7ff4-44cc-8ec2-7db713697fdd",
+				"projectId": "98028cd3-07ad-4c5e-bf03-3d0fd768ba73",
 				"projectRoot": "apps/native-app"
 			}
 		},
-		"owner": "yushna417s-organization",
+		"owner": "konnectcraft-org",
 		"runtimeVersion": {
 			"policy": "appVersion"
 		},
 		"updates": {
-			"url": "https://u.expo.dev/c4ba2b6c-7ff4-44cc-8ec2-7db713697fdd"
+			"url": "https://u.expo.dev/98028cd3-07ad-4c5e-bf03-3d0fd768ba73"
 		}
 	}
 }
