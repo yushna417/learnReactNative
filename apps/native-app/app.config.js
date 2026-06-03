@@ -61,7 +61,7 @@ export default {
 				"projectRoot": "apps/native-app"
 			}
 		},
-		"owner": "konnectcraft-org",
+		"owner": "expo-konnectcraft",
 		"runtimeVersion": {
 			"policy": "appVersion"
 		},
