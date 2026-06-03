@@ -3,7 +3,7 @@ export default {
 	expo: {
 		name: "Digital Yellow Paper",
 		slug: "learn-react-native",
-		version: "1.0.0",
+		version: "1.0.1",
 		orientation: "portrait",
 		icon: "./assets/images/icon.png",
 		scheme: "starterkitexpo",
@@ -21,8 +21,9 @@ export default {
 				foregroundImage: "./assets/images/adaptive-icon.png",
 				backgroundColor: "#ffffff",
 			},
-			package: "com.yushna417sorganization.learnreactnative",
-			permissions: [
+			package: "com.konnectcraft.freshstart",
+			googleServicesFile: "./google-services.json",
+  			permissions: [
 				"android.permission.ACCESS_COARSE_LOCATION",
 				"android.permission.ACCESS_FINE_LOCATION",
 			],
