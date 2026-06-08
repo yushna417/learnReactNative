@@ -3,7 +3,7 @@ export default {
 	expo: {
 		name: "Digital Yellow Paper",
 		slug: "digital-yellow-paper",
-		version: "1.0.1",
+		version: "1.0.2",
 		orientation: "portrait",
 		icon: "./assets/images/icon.png",
 		scheme: "starterkitexpo",
@@ -57,16 +57,16 @@ export default {
 		"extra": {
 			"router": {},
 			"eas": {
-				"projectId": "98028cd3-07ad-4c5e-bf03-3d0fd768ba73",
+				"projectId": "c4ba2b6c-7ff4-44cc-8ec2-7db713697fdd",
 				"projectRoot": "apps/native-app"
 			}
 		},
-		"owner": "expo-konnectcraft",
+		"owner": "yushna417s-organization",
 		"runtimeVersion": {
 			"policy": "appVersion"
 		},
 		"updates": {
-			"url": "https://u.expo.dev/98028cd3-07ad-4c5e-bf03-3d0fd768ba73"
+			"url": "https://u.expo.dev/c4ba2b6c-7ff4-44cc-8ec2-7db713697fdd"
 		}
 	}
 }
