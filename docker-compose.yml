@@ -1,18 +1,23 @@
-version: '3.8'
+
+# ─────────────────────────────────────────────────────────────────
+#  Dev:  docker compose up --build
+#  Prod: docker compose --profile production up -d --build
+# ─────────────────────────────────────────────────────────────────
 
 services:
-  # PostgreSQL Database
+
+  # ── PostgreSQL ────────────────────────────────────────────────
   postgres:
-    image: postgres:15
-    container_name: digitalyellowpaper_db
+    image: postgres:15-alpine
+    container_name: dyp_db
     volumes:
       - postgres_data:/var/lib/postgresql/data/
     environment:
-      - POSTGRES_USER=${POSTGRES_USER:-digitalyellow_user}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-user@password}
-      - POSTGRES_DB=${POSTGRES_DB:-yellow_paper}
+      POSTGRES_USER:     ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB:       ${POSTGRES_DB}
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-digitalyellow_user} -d ${POSTGRES_DB:-yellow_paper}"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -20,28 +25,25 @@ services:
       - app_network
     restart: unless-stopped
 
-  # Django Backend
+  # ── Django Backend ────────────────────────────────────────────
   backend:
     build:
       context: .
       dockerfile: Dockerfile
-      target: ${BACKEND_TARGET:-backend-dev}
-    container_name: digitalyellowpaper_backend
+      target: backend
+    container_name: dyp_backend
     volumes:
-      # Mount for hot reload in development
-      - ./apps/backend:/app/backend
-      - static_volume:/app/backend/static
-      - media_volume:/app/backend/media
+      - ./apps/backend:/apps/backend     # hot-reload in dev (harmless in prod)
+      - static_volume:/apps/backend/static
+      - media_volume:/apps/backend/media
     environment:
-      - DEBUG=${DEBUG:-True}
-      - DATABASE_URL=postgresql://${POSTGRES_USER:-digitalyellow_user}:${POSTGRES_PASSWORD:-user@password}@postgres:5432/${POSTGRES_DB:-yellow_paper}
-      - DJANGO_ALLOWED_HOSTS=${DJANGO_ALLOWED_HOSTS:-localhost,digitalyellowpaper}
-      - DJANGO_SECRET_KEY=${DJANGO_SECRET_KEY:-django-insecure-dev-key-change-in-production}
-      - DJANGO_ENV=${DJANGO_ENV:-development}
-    env_file:
-      - .env.${ENV_FILE:-dev}
+      DEBUG:                ${DEBUG}
+      DJANGO_ENV:           ${DJANGO_ENV}
+      DJANGO_SECRET_KEY:    ${DJANGO_SECRET_KEY}
+      DJANGO_ALLOWED_HOSTS: ${DJANGO_ALLOWED_HOSTS}
+      DATABASE_URL:         postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
     ports:
-      - "${BACKEND_PORT:-8000}:8000"
+      - "${BACKEND_PORT:-8000}:8000"     # direct access in dev; bind to 127.0.0.1:8000 in prod
     depends_on:
       postgres:
         condition: service_healthy
@@ -49,56 +51,21 @@ services:
       - app_network
     restart: unless-stopped
 
-  # React Frontend (Development)
-  frontend-dev:
-    build:
-      context: .
-      dockerfile: Dockerfile
-      target: frontend-dev
-    container_name: digitalyellowpaper_frontend_dev
-    volumes:
-      - ./apps/frontend:/app/frontend
-      - /app/frontend/node_modules
-    environment:
-      - REACT_APP_API_URL=${REACT_APP_API_URL:-http://localhost:8000/api}
-      - CHOKIDAR_USEPOLLING=true  # For hot reload in Docker
-    ports:
-      - "${FRONTEND_DEV_PORT:-3000}:3000"
-    command: sh -c "pnpm run dev -- --host 0.0.0.0 --port 3000"
-    networks:
-      - app_network
-    restart: unless-stopped
-
-  # React Frontend (Production)
-  frontend:
-    build:
-      context: .
-      dockerfile: Dockerfile
-      target: frontend
-    container_name: digitalyellowpaper_frontend
-    environment:
-      - REACT_APP_API_URL=${REACT_APP_API_URL:-https://digitalyellowpaper/api}
-    networks:
-      - app_network
-    restart: unless-stopped
-    profiles:
-      - production
-
-  # Nginx (Production only)
+  # ── Nginx + React (production only) ──────────────────────────
+  # Built React files are baked into the image at build time
   nginx:
     build:
       context: .
-      dockerfile: Dockerfile.nginx
-    container_name: digitalyellowpaper_nginx
+      dockerfile: Dockerfile
+      target: nginx
+    container_name: dyp_nginx
     ports:
       - "80:80"
-      - "443:443"
     volumes:
-      - static_volume:/static
-      - media_volume:/media
+      - static_volume:/static:ro
+      - media_volume:/media:ro
     depends_on:
       - backend
-      - frontend
     networks:
       - app_network
     restart: unless-stopped

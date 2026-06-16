@@ -11,6 +11,8 @@ export default {
 
 		ios: {
 			supportsTablet: true,
+
+			
 			config: {
 				googleMapsApiKey: process.env.GOOGLE_API_KEY,
 			},

@@ -17,7 +17,13 @@ Including another URLconf
 
 from django.contrib import admin
 from django.urls import path
-from api.auth.views import RegisterUserView, LoginView, VerifyOTPView, LogoutView, GetCurrentUserView
+from api.auth.views import (
+    RegisterUserView,
+    LoginView,
+    VerifyOTPView,
+    LogoutView,
+    GetCurrentUserView,
+)
 from api.business.views import (
     CreateBusinessListingView,
     GetBusinessListingDetailView,
@@ -28,29 +34,27 @@ from api.business.views import (
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("auth/register/", RegisterUserView.as_view(), name="register"),
-    path("auth/verify-otp/", VerifyOTPView.as_view(), name="verify-otp"),
-    path("auth/login/", LoginView.as_view(), name="login"),
-    path("auth/logout/", LogoutView.as_view(), name="logout"),
-    path("auth/me/", GetCurrentUserView.as_view(), name="own-details"),
+    path("api/auth/register/", RegisterUserView.as_view(), name="register"),
+    path("api/auth/verify-otp/", VerifyOTPView.as_view(), name="verify-otp"),
+    path("api/auth/login/", LoginView.as_view(), name="login"),
+    path("api/auth/logout/", LogoutView.as_view(), name="logout"),
+    path("api/auth/me/", GetCurrentUserView.as_view(), name="own-details"),
     path(
-        "business/create/", CreateBusinessListingView.as_view(), name="create-listing"
+        "api/business/create/", CreateBusinessListingView.as_view(), name="create-listing"
     ),
+    path("api/business/listings/", GetAllListingsView.as_view(), name="get-listing"),
     path(
-        "business/listings/", GetAllListingsView.as_view(), name="get-listing"
-    ),
-    path(
-        "business/<int:id>/",
+        "api/business/<int:id>/",
         GetBusinessListingDetailView.as_view(),
         name="listing-detail",
     ),
     path(
-        "business/<int:id>/update/",
+        "api/business/<int:id>/update/",
         UpdateBusinessListingView.as_view(),
         name="update-listing",
     ),
     path(
-        "business/<int:id>/delete/",
+        "api/business/<int:id>/delete/",
         DeleteBusinessListingView.as_view(),
         name="delete-listing",
     ),
